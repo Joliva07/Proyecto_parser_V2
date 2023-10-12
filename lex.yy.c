@@ -2017,7 +2017,7 @@ void yyfree (void * ptr )
 
 void token_print(){
     if(FLEX_DEBUG && SHOW_TOKENS){
-        printf("TOKEN FOUND: %s  | LINE: %d\n", yytext, lineno);
+        printf("LINE: %d | %s\n", lineno, yytext);
 
 
         if (vitacora_tokens_file == NULL) {
@@ -2028,8 +2028,8 @@ void token_print(){
             }
         }
 
-        
-        fprintf(vitacora_tokens_file, "TOKEN FOUND: %s  | LINE: %d\n", yytext, lineno);
+
+        fprintf(vitacora_tokens_file, "LINE: %d | %s\n", lineno, yytext);
     }
 }
 
