@@ -7,9 +7,8 @@
 
 extern int lineno, line_init;
 
-extern char str_buf[256];    
+extern char str_buf[256];
 extern char* str_buf_ptr;
-
 
 char* tokens_alfabetos[100];
 int num_tokens_alfabetos = 0;
@@ -17,14 +16,14 @@ char* tokens_estados[100];
 int num_tokens_estados = 0;
 char* tokens_inicial[100];
 int num_tokens_inicial = 0;
-char* tokens_final[100]; 
+char* tokens_final[100];
 int num_tokens_final = 0;
-char tokens_transicional[100]; 
-int num_tokens_transicional = 0; 
-char tokens_afn[100]; 
-int num_tokens_afn = 0; 
-char* tokens_epsilon[100]; 
-int num_tokens_epsilon = 0; 
+char tokens_transicional[100];
+int num_tokens_transicional = 0;
+char tokens_afn[100];
+int num_tokens_afn = 0;
+char* tokens_epsilon[100];
+int num_tokens_epsilon = 0;
 FILE *vitacora_errores_file = NULL;
 
 extern int yylex();
@@ -33,15 +32,15 @@ extern FILE *yyin;
 
 extern void yyterminate();
 
-int error_count=0; 
-int flag_err_type=0; 
-int scope=0;
-int pos_number=0;
-int flag=0;  
-int valueflag=0;
+int error_count = 0;
+int flag_err_type = 0;
+int scope = 0;
+int pos_number = 0;
+int flag = 0;
+int valueflag = 0;
 char* strint;
 
-int found_match = 0; 
+int found_match = 0;
 //%error-verbose
 void yyerror(const char *message);
 %}
@@ -72,11 +71,12 @@ void yyerror(const char *message);
 
 %token <strval> T_COMMA                    ","
 %token <strval> T_INT
-%token <strval> T_STRING                  
+%token <strval> T_STRING
 
+%token <strval> T_ERROR
 %token <strval> T_EOF          0           "end of file"
 
-%type alfabeto alfabetoatr estado estadoatr inicial final atributofin transiciones  
+%type alfabeto alfabetoatr estado estadoatr inicial final atributofin transiciones
 %start programa
 
 %%
@@ -169,20 +169,18 @@ transatr: T_INT T_STRING T_INT
                            // }else{
                                 tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
                            // }
-                         } transatr | %empty;
-
-
-/*epsilon: T_EPSILON{
-    tokens_epsilon[num_tokens_epsilon++]=strdup($1);
-};*/
-
-
+                         } transatr
+                         | T_ERROR {
+                             yyerror("Error sintáctico en la línea actual");
+                             yyclearin;
+                         }
+                         | %empty;
 
 %%
+
 int main(int argc, char *argv[]) {
     int choice;
     int token;
-
 
     if (argc > 1) {
         yyin = fopen(argv[1], "r");
@@ -191,8 +189,8 @@ int main(int argc, char *argv[]) {
             return -1;
         }
     }
-yyparse();
-    
+
+    yyparse();
 
     if (yyin != NULL) {
         fclose(yyin);
@@ -201,11 +199,9 @@ yyparse();
     return 0;
 }
 
-
 void yyerror(const char *message)
 {
     error_count++;
-
 
     if (vitacora_errores_file == NULL) {
         vitacora_errores_file = fopen("vitacora_errores.html", "a");
@@ -215,12 +211,11 @@ void yyerror(const char *message)
         }
     }
 
-
     if (flag_err_type == 0) {
         fprintf(vitacora_errores_file, "-> ERROR at line %d caused by %s : %s\n", lineno, message);
         printf("-> ERROR at line %d caused by %s : %s\n", lineno, message);
     } else if (flag_err_type == 1) {
-        *str_buf_ptr = '\0'; 
+        *str_buf_ptr = '\0';
 
         printf("-> ERROR at line %d near %s : %s\n", lineno, str_buf, message);
     }
