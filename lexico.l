@@ -93,7 +93,7 @@ void close_vitacora_file() {
 }
 
 void comment_print() {
-    if (FLEX_DEBUG && SHOW_COMMENTS) {
+    if (FLEX_DEBUG and SHOW_COMMENTS) {
         printf("COMMENT FOUND: %s  | LINE: %d\n", yytext, lineno);
     }
 }

@@ -41,11 +41,8 @@ int valueflag = 0;
 char* strint;
 
 int found_match = 0;
-//%error-verbose
-void yyerror(const char *message);
+%error-verbose
 %}
-
-%define parse.error verbose
 
 %union{
    int intval;
@@ -162,13 +159,9 @@ transatr: T_INT T_STRING T_INT
 
                             int error_line = lineno;
 
-                          //  if (strcmp($3, tokens_epsilon[0]) != 0){
-                         //       char error_message[100];
-                           //     sprintf(error_message, "One CHARACTER at line %d does not match values %s that were entered in ALFABETO found %s ", error_line, tokens_epsilon[0], $3);
-                         //       yyerror(error_message);
-                           // }else{
-                                tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
-                           // }
+                            // No se verifica el valor de $2 en este caso, ya que es un carácter especial
+
+                            tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
                          } transatr
                          | T_ERROR {
                              yyerror("Error sintáctico en la línea actual");
@@ -207,13 +200,13 @@ void yyerror(const char *message)
         vitacora_errores_file = fopen("vitacora_errores.html", "a");
         if (vitacora_errores_file == NULL) {
             perror("Error al abrir el archivo vitacora_errores.html");
-            exit(-1);
+            return;
         }
     }
 
     if (flag_err_type == 0) {
-        fprintf(vitacora_errores_file, "-> ERROR at line %d caused by %s : %s\n", lineno, message);
-        printf("-> ERROR at line %d caused by %s : %s\n", lineno, message);
+        fprintf(vitacora_errores_file, "-> ERROR at line %d caused by %s : %s\n", lineno, message, yytext);
+        printf("-> ERROR at line %d caused by %s : %s\n", lineno, message, yytext);
     } else if (flag_err_type == 1) {
         *str_buf_ptr = '\0';
 
@@ -224,7 +217,7 @@ void yyerror(const char *message)
     if (MAX_ERRORS > 0 && error_count == MAX_ERRORS) {
         printf("Max errors (%d) detected. ABORTING...\n", MAX_ERRORS);
         fclose(vitacora_errores_file);
-        exit(-1);
+        // No se llama a exit aquí
     }
     fflush(vitacora_errores_file);
 }
