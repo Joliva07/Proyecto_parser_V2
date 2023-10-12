@@ -1,18 +1,33 @@
-rem Bison command
-bison -d parser.y
+::rem Bison command
+::rem bison -d Parser.y
 
-rem Flex command
-flex lexico.l
+::rem Flex command
+::rem flex Parser.l
 
-rem GCC commands
-gcc -c lex.yy.c -o lex.yy.o
-gcc -c parser.tab.c -o parser.tab.o
+::rem GCC commands
+::rem gcc -c lex.yy.c -o lex.yy.o
+::rem gcc -c Parser.tab.c -o Parser.tab.o
 
-rem Linking
-gcc lex.yy.o parser.tab.o -o myParser.exe
+::rem Linking
+::rem gcc lex.yy.o Parser.tab.o -o myParser.exe
 
-::rem Solicitar al usuario la ruta del archivo XML a ejecutar
-::set /p xmlFilePath=Ingrese la ruta del archivo XML que desea ejecutar: 
+::rem clear (comentario)
+::rem Run the parser
+::rem myParser.exe Ejemplo.xml ---
 
-::rem Ejecutar el parser con el archivo XML proporcionado por el usuario
-myParser.exe Ejemplo.xml
+@echo off
+echo Compilando el programa C++...
+g++ -o Main.exe Main.cpp
+
+if errorlevel 1 (
+    echo Error al compilar el programa.
+    pause
+    exit /b 1
+)
+
+echo Programa compilado exitosamente. Ejecutando el programa...
+Main.exe
+
+echo Presiona Enter para salir...
+pause
+
