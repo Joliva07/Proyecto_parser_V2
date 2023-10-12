@@ -179,12 +179,10 @@ transatr: T_INT T_STRING T_INT
 
 
 %%
-int error_count = 0;
-FILE vitacora_errores_file = NULL;
-
-int main(int argc, charargv[]) {
+int main(int argc, char *argv[]) {
     int choice;
     int token;
+
 
     if (argc > 1) {
         yyin = fopen(argv[1], "r");
@@ -193,8 +191,8 @@ int main(int argc, charargv[]) {
             return -1;
         }
     }
-
-    yyparse();
+yyparse();
+    
 
     if (yyin != NULL) {
         fclose(yyin);
@@ -203,8 +201,11 @@ int main(int argc, charargv[]) {
     return 0;
 }
 
-void yyerror(const char *message) {
+
+void yyerror(const char *message)
+{
     error_count++;
+
 
     if (vitacora_errores_file == NULL) {
         vitacora_errores_file = fopen("vitacora_errores.html", "a");
@@ -214,15 +215,21 @@ void yyerror(const char *message) {
         }
     }
 
+
     if (flag_err_type == 0) {
         fprintf(vitacora_errores_file, "-> ERROR at line %d caused by %s : %s\n", lineno, message);
         printf("-> ERROR at line %d caused by %s : %s\n", lineno, message);
     } else if (flag_err_type == 1) {
-        *str_buf_ptr = '\0';
+        *str_buf_ptr = '\0'; 
 
         printf("-> ERROR at line %d near %s : %s\n", lineno, str_buf, message);
     }
 
     flag_err_type = 0;
+    if (MAX_ERRORS > 0 && error_count == MAX_ERRORS) {
+        printf("Max errors (%d) detected. ABORTING...\n", MAX_ERRORS);
+        fclose(vitacora_errores_file);
+        exit(-1);
+    }
     fflush(vitacora_errores_file);
 }

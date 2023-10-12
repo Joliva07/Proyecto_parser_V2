@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 1 "parser.y"
+#line 1 "Parser.y"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -115,7 +115,7 @@ int found_match = 0;
 //%error-verbose
 void yyerror(const char *message);
 
-#line 119 "parser.tab.c"
+#line 119 "Parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -138,7 +138,7 @@ void yyerror(const char *message);
 #  endif
 # endif
 
-#include "parser.tab.h"
+#include "Parser.tab.h"
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -1420,102 +1420,102 @@ yyreduce:
   switch (yyn)
     {
   case 4: /* alfabetoatr: T_STRING T_STRING  */
-#line 88 "parser.y"
+#line 88 "Parser.y"
                                {
             tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-1].strval));
             tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[0].strval));
         }
-#line 1429 "parser.tab.c"
+#line 1429 "Parser.tab.c"
     break;
 
   case 5: /* alfabetoatr: T_STRING T_STRING T_STRING T_STRING  */
-#line 92 "parser.y"
+#line 92 "Parser.y"
                                               {
             tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-3].strval));
             tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-2].strval));
             tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-1].strval));
             tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[0].strval));
         }
-#line 1440 "parser.tab.c"
+#line 1440 "Parser.tab.c"
     break;
 
   case 6: /* alfabetoatr: T_STRING T_STRING T_STRING  */
-#line 98 "parser.y"
+#line 98 "Parser.y"
                                       {
             tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-2].strval));
             tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-1].strval));
             tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[0].strval));
         }
-#line 1450 "parser.tab.c"
+#line 1450 "Parser.tab.c"
     break;
 
   case 8: /* estadoatr: T_INT T_INT  */
-#line 106 "parser.y"
+#line 106 "Parser.y"
                        {
             tokens_estados[num_tokens_estados++] = strdup((yyvsp[-1].strval));
             tokens_estados[num_tokens_estados++] = strdup((yyvsp[0].strval));
         }
-#line 1459 "parser.tab.c"
+#line 1459 "Parser.tab.c"
     break;
 
   case 9: /* estadoatr: T_INT T_INT T_INT T_INT  */
-#line 110 "parser.y"
+#line 110 "Parser.y"
                                   {
             tokens_estados[num_tokens_estados++] = strdup((yyvsp[-3].strval));
             tokens_estados[num_tokens_estados++] = strdup((yyvsp[-2].strval));
             tokens_estados[num_tokens_estados++] = strdup((yyvsp[-1].strval));
             tokens_estados[num_tokens_estados++] = strdup((yyvsp[0].strval));
         }
-#line 1470 "parser.tab.c"
+#line 1470 "Parser.tab.c"
     break;
 
   case 10: /* estadoatr: T_INT T_INT T_INT  */
-#line 116 "parser.y"
+#line 116 "Parser.y"
                             {
             tokens_estados[num_tokens_estados++] = strdup((yyvsp[-2].strval));
             tokens_estados[num_tokens_estados++] = strdup((yyvsp[-1].strval));
             tokens_estados[num_tokens_estados++] = strdup((yyvsp[0].strval));
         }
-#line 1480 "parser.tab.c"
+#line 1480 "Parser.tab.c"
     break;
 
   case 11: /* inicial: T_INICIAL_OP T_INT T_INICIAL_END  */
-#line 122 "parser.y"
+#line 122 "Parser.y"
                                          {
             tokens_inicial[num_tokens_inicial++] = strdup((yyvsp[-1].strval));
         }
-#line 1488 "parser.tab.c"
+#line 1488 "Parser.tab.c"
     break;
 
   case 13: /* atributofin: T_INT  */
-#line 128 "parser.y"
+#line 128 "Parser.y"
                    {
                     tokens_final[num_tokens_final++] = strdup((yyvsp[0].strval));
                 }
-#line 1496 "parser.tab.c"
+#line 1496 "Parser.tab.c"
     break;
 
   case 14: /* atributofin: T_INT T_INT  */
-#line 131 "parser.y"
+#line 131 "Parser.y"
                               {
                     tokens_final[num_tokens_final++] = strdup((yyvsp[-1].strval));
                     tokens_final[num_tokens_final++] = strdup((yyvsp[0].strval));
                 }
-#line 1505 "parser.tab.c"
+#line 1505 "Parser.tab.c"
     break;
 
   case 15: /* atributofin: T_INT T_INT T_INT  */
-#line 135 "parser.y"
+#line 135 "Parser.y"
                                   {
                     tokens_final[num_tokens_final++] = strdup((yyvsp[-2].strval));
                     tokens_final[num_tokens_final++] = strdup((yyvsp[-1].strval));
                     tokens_final[num_tokens_final++] = strdup((yyvsp[0].strval));
                 }
-#line 1515 "parser.tab.c"
+#line 1515 "Parser.tab.c"
     break;
 
   case 17: /* $@1: %empty  */
-#line 144 "parser.y"
+#line 144 "Parser.y"
                          {
 
                             char concatenated_values[100]; 
@@ -1531,11 +1531,11 @@ yyreduce:
                                 tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
                             }
                          }
-#line 1535 "parser.tab.c"
+#line 1535 "Parser.tab.c"
     break;
 
   case 19: /* $@2: %empty  */
-#line 159 "parser.y"
+#line 159 "Parser.y"
                                                  {
                             char concatenated_values[100]; 
                             sprintf(concatenated_values, "%d %s %d", atoi((yyvsp[-2].strval)), (yyvsp[-1].strval), atoi((yyvsp[0].strval)));
@@ -1550,11 +1550,11 @@ yyreduce:
                                 tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
                            // }
                          }
-#line 1554 "parser.tab.c"
+#line 1554 "Parser.tab.c"
     break;
 
 
-#line 1558 "parser.tab.c"
+#line 1558 "Parser.tab.c"
 
       default: break;
     }
@@ -1778,7 +1778,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 181 "parser.y"
+#line 181 "Parser.y"
 
 int main(int argc, char *argv[]) {
     int choice;
