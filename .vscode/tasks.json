@@ -1,0 +1,27 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe compilar archivo activo",
+            "command": "g++",
+            "args": [
+                "-std=c++11", 
+                "C:/Users/Checha/projects/Proyecto_parser_V2/Main.cpp", 
+                "-o", 
+                "C:/Users/Checha/projects/Proyecto_parser_V2/Main"
+            ],
+            "options": {
+                "cwd": "C:/Users/Checha/projects/Proyecto_parser_V2"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Tarea generada por el depurador."
+        }
+    ],
+    "version": "2.0.0"
+}
