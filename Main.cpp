@@ -10,20 +10,15 @@
 #include <cstring>
 #include <sstream>
 #include <regex>
-
-// No es necesario incluir el archivo generado por Bison
-// #include "parser.tab.h" 
-
-// No es necesario declarar funciones relacionadas con el analizador léxico y sintáctico
-// extern int yylex();
-// extern FILE *yyin;
+#include <tuple>
+#include <cstdlib>
+#include <unordered_map>
+#include <unordered_set>
+#include <set>
 
 #ifdef _WIN32
 #include <cstdlib>
 #endif
-
-// No es necesario reiniciar el analizador léxico
-// extern void yyrestart(FILE*);
 
 bool isXML(const std::string& filename) {
     // Verifica si el archivo tiene extensión .xml
@@ -54,6 +49,89 @@ std::string extractFileName(const std::string& filePath) {
     }
     return filePath;
 }
+
+void generateGraph(const std::vector<std::tuple<std::string, std::string, std::string>>& transiciones,
+                  const std::string& estadoInicial,
+                  const std::vector<std::string>& estadosFinales) {
+    // Abre un archivo DOT para escribir el grafo
+    std::ofstream dotFile("graph.dot");
+    if (!dotFile.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo 'graph.dot'." << std::endl;
+        return;
+    }
+
+    // Escribe el encabezado del archivo DOT
+    dotFile << "digraph G {\n";
+
+    // Conjunto de estados finales
+    std::set<std::string> estadosFinalesSet(estadosFinales.begin(), estadosFinales.end());
+
+    // Mapa para redirigir transiciones
+    std::unordered_map<std::string, std::string> redirigirTransiciones;
+
+    // Agrega nodos al grafo
+    for (const auto& transicion : transiciones) {
+        std::string estadoActual = std::get<0>(transicion);
+        std::string simbolo = std::get<1>(transicion);
+        std::string estadoSiguiente = std::get<2>(transicion);
+
+        dotFile << "  \"" << estadoActual << "\" [shape=ellipse];\n";
+        dotFile << "  \"" << estadoSiguiente << "\" [shape=ellipse];\n";
+
+        // Si la transición va de un estado final a otro estado final, redirige a un estado no final.
+        if (estadosFinalesSet.count(estadoActual) != 0 && estadosFinalesSet.count(estadoSiguiente) != 0) {
+            // Encuentra un estado no final para redirigir la transición
+            std::string estadoRedireccionado = estadoActual;
+            while (estadosFinalesSet.count(estadoRedireccionado) != 0 || estadoRedireccionado == estadoInicial) {
+                // Encuentra el estado anterior al estado redireccionado
+                for (const auto& t : transiciones) {
+                    if (std::get<2>(t) == estadoRedireccionado) {
+                        estadoRedireccionado = std::get<0>(t);
+                        break;
+                    }
+                }
+            }
+
+            redirigirTransiciones[estadoActual] = estadoRedireccionado;
+        }
+
+        // Agrega conexiones entre nodos
+        if (redirigirTransiciones.count(estadoActual) != 0) {
+            dotFile << "  \"" << redirigirTransiciones[estadoActual] << "\" -> \"" << estadoSiguiente << "\" [label=\"" << simbolo << "\"];\n";
+        } else {
+            dotFile << "  \"" << estadoActual << "\" -> \"" << estadoSiguiente << "\" [label=\"" << simbolo << "\"];\n";
+        }
+    }
+
+    // Agrega el estado inicial con una flecha
+    dotFile << "  start [shape=none, label=\"\", width=0, height=0];\n";
+    dotFile << "  start -> \"" << estadoInicial << "\" [label=\"Inicio\", dir=none];\n";
+
+    // Agrega los estados finales con un doble círculo
+    for (const std::string& estadoFinal : estadosFinales) {
+        if (redirigirTransiciones.count(estadoFinal) != 0) {
+            dotFile << "  \"" << estadoFinal << "\" [shape=doublecircle];\n";
+        } else {
+            dotFile << "  \"" << estadoFinal << "\" [shape=doublecircle];\n";
+        }
+    }
+
+    // Cierra el grafo DOT
+    dotFile << "}\n";
+    dotFile.close();
+
+    // Genera el gráfico en formato PNG
+    int result = std::system("dot -Tpng graph.dot -o graph.png");
+
+    if (result != 0) {
+        std::cerr << "Error al generar el gráfico." << std::endl;
+    } else {
+        std::cout << "Se ha generado el gráfico 'graph.png'." << std::endl;
+    }
+}
+
+
+
 
 void createHTMLWithTransitionTable() {
     // Abre el archivo "vitacora_tokens.html" para lectura
@@ -206,6 +284,9 @@ void createHTMLWithTransitionTable() {
     }
     outputFile << "</table>\n";
 
+    generateGraph(transiciones, estadoInicial, estadosFinales);
+
+    outputFile << "<img src='graph.png' />";
     // Agrega las etiquetas HTML finales al archivo de salida
     outputFile << "</body>\n";
     outputFile << "</html>\n";
@@ -216,8 +297,6 @@ void createHTMLWithTransitionTable() {
 
     std::cout << "Se ha creado el archivo 'output_with_table.html' con la tabla de transiciones." << std::endl;
 }
-
-
 
 
 void createAFN() {
