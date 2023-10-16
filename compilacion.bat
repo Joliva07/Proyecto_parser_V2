@@ -1,5 +1,5 @@
 rem Flex command
-flex lexer.l
+flex lexico.l
 
 rem Bison command
 bison -d Parser.y
