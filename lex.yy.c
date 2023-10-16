@@ -563,8 +563,8 @@ char *yytext;
 extern int flag_err_type;
 extern void yyerror(char *message);
 
-int lineno=1; 
-int line_init=-1; 
+int lineno = 1;
+int line_init = -1;
 
 char str_buf[256];
 char* str_buf_ptr;
@@ -867,87 +867,87 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 43 "lexico.l"
-{ token_print(T_AUTOMATA_AFN_OP); yylval.strval=strdup(yytext); close_vitacora_file(); return T_AUTOMATA_AFN_OP;}
+{ token_print(T_AUTOMATA_AFN_OP); yylval.strval = strdup(yytext); close_vitacora_file(); return T_AUTOMATA_AFN_OP; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 44 "lexico.l"
-{ token_print(T_AUTOMATA_AFN_END); yylval.strval=strdup(yytext); close_vitacora_file(); return T_AUTOMATA_AFN_END;}
+{ token_print(T_AUTOMATA_AFN_END); yylval.strval = strdup(yytext); close_vitacora_file(); return T_AUTOMATA_AFN_END; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 45 "lexico.l"
-{ token_print(T_ALFABETO_OP); yylval.strval=strdup(yytext); close_vitacora_file(); return T_ALFABETO_OP;}
+{ token_print(T_ALFABETO_OP); yylval.strval = strdup(yytext); close_vitacora_file(); return T_ALFABETO_OP; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 46 "lexico.l"
-{ token_print(T_ALFABETO_END); yylval.strval=strdup(yytext); close_vitacora_file(); return T_ALFABETO_END;}
+{ token_print(T_ALFABETO_END); yylval.strval = strdup(yytext); close_vitacora_file(); return T_ALFABETO_END; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 47 "lexico.l"
-{ token_print(T_ESTADO_OP); yylval.strval=strdup(yytext); close_vitacora_file(); return T_ESTADO_OP;}
+{ token_print(T_ESTADO_OP); yylval.strval = strdup(yytext); close_vitacora_file(); return T_ESTADO_OP; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 48 "lexico.l"
-{ token_print(T_ESTADO_END); yylval.strval=strdup(yytext); close_vitacora_file(); return T_ESTADO_END;}
+{ token_print(T_ESTADO_END); yylval.strval = strdup(yytext); close_vitacora_file(); return T_ESTADO_END; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 49 "lexico.l"
-{ token_print(T_INICIAL_OP); yylval.strval=strdup(yytext); close_vitacora_file(); return T_INICIAL_OP;}
+{ token_print(T_INICIAL_OP); yylval.strval = strdup(yytext); close_vitacora_file(); return T_INICIAL_OP; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 50 "lexico.l"
-{ token_print(T_INICIAL_END); yylval.strval=strdup(yytext); close_vitacora_file(); return T_INICIAL_END;}
+{ token_print(T_INICIAL_END); yylval.strval = strdup(yytext); close_vitacora_file(); return T_INICIAL_END; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 51 "lexico.l"
-{ token_print(T_FINAL_OP); yylval.strval=strdup(yytext); close_vitacora_file(); return T_FINAL_OP;}
+{ token_print(T_FINAL_OP); yylval.strval = strdup(yytext); close_vitacora_file(); return T_FINAL_OP; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 52 "lexico.l"
-{ token_print(T_FINAL_END); yylval.strval=strdup(yytext); close_vitacora_file(); return T_FINAL_END;}
+{ token_print(T_FINAL_END); yylval.strval = strdup(yytext); close_vitacora_file(); return T_FINAL_END; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 53 "lexico.l"
-{ token_print(T_TRANSICIONES_OP); yylval.strval=strdup(yytext); close_vitacora_file(); return T_TRANSICIONES_OP;}
+{ token_print(T_TRANSICIONES_OP); yylval.strval = strdup(yytext); close_vitacora_file(); return T_TRANSICIONES_OP; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 54 "lexico.l"
-{ token_print(T_TRANSICIONES_END); yylval.strval=strdup(yytext); close_vitacora_file(); return T_TRANSICIONES_END;}
+{ token_print(T_TRANSICIONES_END); yylval.strval = strdup(yytext); close_vitacora_file(); return T_TRANSICIONES_END; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 55 "lexico.l"
-{ token_print(T_EPSILON); yylval.strval=strdup(yytext); close_vitacora_file(); return T_EPSILON;}
+{ token_print(T_EPSILON); yylval.strval = strdup(yytext); close_vitacora_file(); return T_EPSILON; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 57 "lexico.l"
-{ token_print(T_COMMA); yylval.strval=strdup(yytext); close_vitacora_file(); return T_COMMA;}
+#line 56 "lexico.l"
+{ token_print(T_COMMA); yylval.strval = strdup(yytext); close_vitacora_file(); return T_COMMA; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 60 "lexico.l"
-{token_print(T_INT); yylval.strval=strdup(yytext); close_vitacora_file(); return T_INT;}
+#line 58 "lexico.l"
+{ token_print(T_INT); yylval.strval = strdup(yytext); close_vitacora_file(); return T_INT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 61 "lexico.l"
-{ token_print(T_STRING); yylval.strval=strdup(yytext); close_vitacora_file(); return T_STRING;}
+#line 59 "lexico.l"
+{ token_print(T_STRING); yylval.strval = strdup(yytext); close_vitacora_file(); return T_STRING; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 64 "lexico.l"
-{   }  
+#line 61 "lexico.l"
+{}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(STATE_COMMENT):
@@ -955,49 +955,42 @@ case YY_STATE_EOF(SKIP_COMMENT):
 case YY_STATE_EOF(STATE_INLINE_COMMENT):
 case YY_STATE_EOF(STATE_STRING):
 case YY_STATE_EOF(STRING):
-#line 65 "lexico.l"
-{ token_print(T_EOF); yylval.strval=strdup(yytext); return T_EOF;}
+#line 62 "lexico.l"
+{ token_print(T_EOF); yylval.strval = strdup(yytext); return T_EOF; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 66 "lexico.l"
-{ printf("UNRECOGNIZED_CHAR: %s\n", yytext); }
+#line 63 "lexico.l"
+{ printf("UNRECOGNIZED_CHAR: %s\n", yytext); return ERROR_TOKEN; }
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 67 "lexico.l"
-{lineno++;}
+#line 64 "lexico.l"
+{ lineno++; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 68 "lexico.l"
+#line 66 "lexico.l"
 { BEGIN(STATE_COMMENT); str_buf_ptr = str_buf; *str_buf_ptr = '\0'; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 69 "lexico.l"
-{ BEGIN(INITIAL); 
-                          if(strstr(str_buf, "--") != NULL) {
-                            fprintf(stderr, "Invalid comment on line %d: comment contains '--'\n", lineno);
-                            yyerror("Wrong token");
-                          } else {
-                            comment_print();
-                          }
-                        }
+#line 67 "lexico.l"
+{ BEGIN(INITIAL); if (strstr(str_buf, "--") != NULL) { fprintf(stderr, "Invalid comment on line %d: comment contains '--'\n", lineno); yyerror("Wrong token"); } else { comment_print(); } }
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 77 "lexico.l"
-{ *str_buf_ptr = *yytext; str_buf_ptr++; *str_buf_ptr = '\0'; ECHO;}
+#line 68 "lexico.l"
+{ *str_buf_ptr = *yytext; str_buf_ptr++; *str_buf_ptr = '\0'; ECHO; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 79 "lexico.l"
+#line 70 "lexico.l"
 ECHO;
 	YY_BREAK
-#line 1000 "lex.yy.c"
+#line 993 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2012,13 +2005,18 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 79 "lexico.l"
+#line 70 "lexico.l"
 
 
+<<<<<<< Updated upstream
 void token_print(){
     if(FLEX_DEBUG && SHOW_TOKENS){
         printf("LINE: %d | %s\n", lineno, yytext);
-
+=======
+void token_print(int token_type) {
+    if (FLEX_DEBUG && SHOW_TOKENS) {
+        printf("TOKEN FOUND: %s  | LINE: %d\n", yytext, lineno);
+>>>>>>> Stashed changes
 
         if (vitacora_tokens_file == NULL) {
             vitacora_tokens_file = fopen("vitacora_tokens.html", "a");
@@ -2028,20 +2026,24 @@ void token_print(){
             }
         }
 
+<<<<<<< Updated upstream
 
         fprintf(vitacora_tokens_file, "LINE: %d | %s\n", lineno, yytext);
+=======
+        fprintf(vitacora_tokens_file, "TOKEN FOUND: %s  | LINE: %d\n", yytext, lineno);
+>>>>>>> Stashed changes
     }
 }
-
 
 void close_vitacora_file() {
     if (vitacora_tokens_file != NULL) {
         fclose(vitacora_tokens_file);
-        vitacora_tokens_file = NULL;  
+        vitacora_tokens_file = NULL;
     }
 }
-void comment_print(){             
-    if(FLEX_DEBUG && SHOW_COMMENTS){
-        printf("COMMENT FOUND: %s  | LINE: %d\n", yytext,lineno);
-    }    
+
+void comment_print() {
+    if (FLEX_DEBUG and SHOW_COMMENTS) {
+        printf("COMMENT FOUND: %s  | LINE: %d\n", yytext, lineno);
+    }
 }

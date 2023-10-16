@@ -69,7 +69,8 @@ extern int yydebug;
     T_EPSILON = 270,               /* T_EPSILON  */
     T_COMMA = 271,                 /* ","  */
     T_INT = 272,                   /* T_INT  */
-    T_STRING = 273                 /* T_STRING  */
+    T_STRING = 273,                /* T_STRING  */
+    T_ERROR = 274                  /* T_ERROR  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -78,14 +79,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 51 "Parser.y"
+#line 47 "Parser.y"
 
    int intval;
    float floatval;
    char charval;
    char *strval;
 
-#line 89 "Parser.tab.h"
+#line 90 "Parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
