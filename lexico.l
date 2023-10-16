@@ -69,9 +69,15 @@ WHITESPACE [ \t]
 
 %%
 
+<<<<<<< Updated upstream
 void token_print(int token_type) {
     if (FLEX_DEBUG && SHOW_TOKENS) {
         printf("TOKEN FOUND: %s  | LINE: %d\n", yytext, lineno);
+=======
+void token_print(){
+    if(FLEX_DEBUG && SHOW_TOKENS){
+        printf("LINE: %d | %s\n", lineno, yytext);
+>>>>>>> Stashed changes
 
         if (vitacora_tokens_file == NULL) {
             vitacora_tokens_file = fopen("vitacora_tokens.html", "a");
@@ -81,7 +87,12 @@ void token_print(int token_type) {
             }
         }
 
+<<<<<<< Updated upstream
         fprintf(vitacora_tokens_file, "TOKEN FOUND: %s  | LINE: %d\n", yytext, lineno);
+=======
+
+        fprintf(vitacora_tokens_file, "LINE: %d | %s\n", lineno, yytext);
+>>>>>>> Stashed changes
     }
 }
 

@@ -9,35 +9,16 @@
 #include <thread>
 #include <cstring>
 #include <sstream>
-
-// No es necesario incluir el archivo generado por Bison
-// #include "parser.tab.h" 
-
-// No es necesario declarar funciones relacionadas con el analizador léxico y sintáctico
-// extern int yylex();
-// extern FILE *yyin;
+#include <regex>
+#include <tuple>
+#include <cstdlib>
+#include <unordered_map>
+#include <unordered_set>
+#include <set>
 
 #ifdef _WIN32
 #include <cstdlib>
 #endif
-
-char* tokens_alfabetos[100];
-int num_tokens_alfabetos = 0;
-char* tokens_estados[100];
-int num_tokens_estados = 0;
-char* tokens_inicial[100];
-int num_tokens_inicial = 0;
-char* tokens_final[100];
-int num_tokens_final = 0;
-char tokens_transicional[100];
-int num_tokens_transicional = 0;
-char tokens_afn[100];
-int num_tokens_afn = 0;
-char* tokens_epsilon[100];
-int num_tokens_epsilon = 0;
-
-// No es necesario reiniciar el analizador léxico
-// extern void yyrestart(FILE*);
 
 bool isXML(const std::string& filename) {
     // Verifica si el archivo tiene extensión .xml
@@ -69,54 +50,88 @@ std::string extractFileName(const std::string& filePath) {
     return filePath;
 }
 
-void processParserFile(const std::string& parserFilePath) {
-    std::ifstream parserFile(parserFilePath);
-    if (!parserFile.is_open()) {
-        std::cerr << "Error: No se pudo abrir el archivo 'parser.y'." << std::endl;
+void generateGraph(const std::vector<std::tuple<std::string, std::string, std::string>>& transiciones,
+                  const std::string& estadoInicial,
+                  const std::vector<std::string>& estadosFinales) {
+    // Abre un archivo DOT para escribir el grafo
+    std::ofstream dotFile("graph.dot");
+    if (!dotFile.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo 'graph.dot'." << std::endl;
         return;
     }
 
-    std::string line;
-    while (std::getline(parserFile, line)) {
-        if (line.find("tokens_alfabetos[num_tokens_alfabetos++] = ") != std::string::npos) {
-            size_t start = line.find("\"") + 1;
-            size_t end = line.find("\";", start);
-            std::string token = line.substr(start, end - start);
-            tokens_alfabetos[num_tokens_alfabetos++] = strdup(token.c_str());
-        } else if (line.find("tokens_estados[num_tokens_estados++] = ") != std::string::npos) {
-            size_t start = line.find("\"") + 1;
-            size_t end = line.find("\";", start);
-            std::string token = line.substr(start, end - start);
-            tokens_estados[num_tokens_estados++] = strdup(token.c_str());
-        } else if (line.find("tokens_inicial[num_tokens_inicial++] = ") != std::string::npos) {
-            size_t start = line.find("\"") + 1;
-            size_t end = line.find("\";", start);
-            std::string token = line.substr(start, end - start);
-            tokens_inicial[num_tokens_inicial++] = strdup(token.c_str());
-        } else if (line.find("tokens_final[num_tokens_final++] = ") != std::string::npos) {
-            size_t start = line.find("\"") + 1;
-            size_t end = line.find("\";", start);
-            std::string token = line.substr(start, end - start);
-            tokens_final[num_tokens_final++] = strdup(token.c_str());
-        } else if (line.find("tokens_transicional[num_tokens_transicional++] = ") != std::string::npos) {
-            size_t start = line.find("\"") + 1;
-            size_t end = line.find("\";", start);
-            std::string token = line.substr(start, end - start);
-            strcpy(tokens_transicional, token.c_str());
-        } else if (line.find("tokens_afn[num_tokens_afn++] = ") != std::string::npos) {
-            size_t start = line.find("\"") + 1;
-            size_t end = line.find("\";", start);
-            std::string token = line.substr(start, end - start);
-            strcpy(tokens_afn, token.c_str());
-        } else if (line.find("tokens_epsilon[num_tokens_epsilon++] = ") != std::string::npos) {
-            size_t start = line.find("\"") + 1;
-            size_t end = line.find("\";", start);
-            std::string token = line.substr(start, end - start);
-            tokens_epsilon[num_tokens_epsilon++] = strdup(token.c_str());
+    // Escribe el encabezado del archivo DOT
+    dotFile << "digraph G {\n";
+
+    // Conjunto de estados finales
+    std::set<std::string> estadosFinalesSet(estadosFinales.begin(), estadosFinales.end());
+
+    // Mapa para redirigir transiciones
+    std::unordered_map<std::string, std::string> redirigirTransiciones;
+
+    // Agrega nodos al grafo
+    for (const auto& transicion : transiciones) {
+        std::string estadoActual = std::get<0>(transicion);
+        std::string simbolo = std::get<1>(transicion);
+        std::string estadoSiguiente = std::get<2>(transicion);
+
+        dotFile << "  \"" << estadoActual << "\" [shape=ellipse];\n";
+        dotFile << "  \"" << estadoSiguiente << "\" [shape=ellipse];\n";
+
+        // Si la transición va de un estado final a otro estado final, redirige a un estado no final.
+        if (estadosFinalesSet.count(estadoActual) != 0 && estadosFinalesSet.count(estadoSiguiente) != 0) {
+            // Encuentra un estado no final para redirigir la transición
+            std::string estadoRedireccionado = estadoActual;
+            while (estadosFinalesSet.count(estadoRedireccionado) != 0 || estadoRedireccionado == estadoInicial) {
+                // Encuentra el estado anterior al estado redireccionado
+                for (const auto& t : transiciones) {
+                    if (std::get<2>(t) == estadoRedireccionado) {
+                        estadoRedireccionado = std::get<0>(t);
+                        break;
+                    }
+                }
+            }
+
+            redirigirTransiciones[estadoActual] = estadoRedireccionado;
         }
-        // Agrega más bloques 'else if' para procesar otros tipos de tokens si es necesario.
+
+        // Agrega conexiones entre nodos
+        if (redirigirTransiciones.count(estadoActual) != 0) {
+            dotFile << "  \"" << redirigirTransiciones[estadoActual] << "\" -> \"" << estadoSiguiente << "\" [label=\"" << simbolo << "\"];\n";
+        } else {
+            dotFile << "  \"" << estadoActual << "\" -> \"" << estadoSiguiente << "\" [label=\"" << simbolo << "\"];\n";
+        }
+    }
+
+    // Agrega el estado inicial con una flecha
+    dotFile << "  start [shape=none, label=\"\", width=0, height=0];\n";
+    dotFile << "  start -> \"" << estadoInicial << "\" [label=\"Inicio\", dir=none];\n";
+
+    // Agrega los estados finales con un doble círculo
+    for (const std::string& estadoFinal : estadosFinales) {
+        if (redirigirTransiciones.count(estadoFinal) != 0) {
+            dotFile << "  \"" << estadoFinal << "\" [shape=doublecircle];\n";
+        } else {
+            dotFile << "  \"" << estadoFinal << "\" [shape=doublecircle];\n";
+        }
+    }
+
+    // Cierra el grafo DOT
+    dotFile << "}\n";
+    dotFile.close();
+
+    // Genera el gráfico en formato PNG
+    int result = std::system("dot -Tpng graph.dot -o graph.png");
+
+    if (result != 0) {
+        std::cerr << "Error al generar el gráfico." << std::endl;
+    } else {
+        std::cout << "Se ha generado el gráfico 'graph.png'." << std::endl;
     }
 }
+
+
+
 
 void createHTMLWithTransitionTable() {
     // Abre el archivo "vitacora_tokens.html" para lectura
@@ -132,6 +147,7 @@ void createHTMLWithTransitionTable() {
 
     if (!outputFile.is_open()) {
         std::cerr << "Error: No se pudo crear el archivo 'output_with_table.html'." << std::endl;
+        tokensFile.close();  // Importante: Cerrar el archivo antes de salir
         return;
     }
 
@@ -139,7 +155,7 @@ void createHTMLWithTransitionTable() {
     outputFile << "<!DOCTYPE html>\n";
     outputFile << "<html>\n";
     outputFile << "<head>\n";
-    outputFile << "<title>Tabla de Transiciones</title>\n";
+    outputFile << "<title>El dibujo</title>\n";
     outputFile << "</head>\n";
     outputFile << "<body>\n";
 
@@ -151,81 +167,80 @@ void createHTMLWithTransitionTable() {
     std::vector<std::tuple<std::string, std::string, std::string>> transiciones;
 
     while (std::getline(tokensFile, line)) {
-        size_t found = line.find("TOKEN FOUND: ");
+        // Encuentra la posición del primer '|'
+        size_t found = line.find("|");
         if (found != std::string::npos) {
-            size_t start = found + strlen("TOKEN FOUND: ");
-            size_t end = line.find_first_of(" |", start);
-            std::string token = line.substr(start, end - start);
+            // Obtiene la información después del '|'
+            std::string lineData = line.substr(found + 1);
 
-            if (token == "<ALFABETO>") {
-                // Procesa el alfabeto
-                while (std::getline(tokensFile, line)) {
-                    if (line.find("</ALFABETO>") != std::string::npos) {
-                        break;
-                    }
-                    size_t start = line.find("TOKEN FOUND: ");
-                    if (start != std::string::npos) {
-                        start += strlen("TOKEN FOUND: ");
-                        alfabeto += line.substr(start) + ", ";
-                    }
-                }
-            } else if (token == "<ESTADO>") {
-                // Procesa los estados
-                while (std::getline(tokensFile, line)) {
-                    if (line.find("</ESTADO>") != std::string::npos) {
-                        break;
-                    }
-                    size_t start = line.find("TOKEN FOUND: ");
-                    if (start != std::string::npos) {
-                        start += strlen("TOKEN FOUND: ");
-                        estados.push_back(line.substr(start));
-                    }
-                }
-            } else if (token == "<INICIAL>") {
-                // Procesa el estado inicial
-                while (std::getline(tokensFile, line)) {
-                    if (line.find("</INICIAL>") != std::string::npos) {
-                        break;
-                    }
-                    size_t start = line.find("TOKEN FOUND: ");
-                    if (start != std::string::npos) {
-                        start += strlen("TOKEN FOUND: ");
-                        estadoInicial = line.substr(start);
-                    }
-                }
-            } else if (token == "<FINAL>") {
-                // Procesa los estados finales
-                while (std::getline(tokensFile, line)) {
-                    if (line.find("</FINAL>") != std::string::npos) {
-                        break;
-                    }
-                    size_t start = line.find("TOKEN FOUND: ");
-                    if (start != std::string::npos) {
-                        start += strlen("TOKEN FOUND: ");
-                        estadosFinales.push_back(line.substr(start));
-                    }
-                }
-            } else if (token == "<TRANSICIONES>") {
-                // Procesa las transiciones
-                while (std::getline(tokensFile, line)) {
-                    if (line.find("</TRANSICIONES>") != std::string::npos) {
-                        break;
-                    }
-                    size_t start = line.find("TOKEN FOUND: ");
-                    if (start != std::string::npos) {
-                        start += strlen("TOKEN FOUND: ");
-                        std::string estadoActual = line.substr(start);
-                        std::getline(tokensFile, line);  // Lee la siguiente línea
-                        start = line.find("TOKEN FOUND: ");
+            // Comprueba que la cadena sea lo suficientemente larga antes de procesarla
+            if (lineData.size() > 0) {
+                // Procesa la información basada en el contenido después del '|'
+                if (lineData.find("<ALFABETO>") != std::string::npos) {
+                    while (std::getline(tokensFile, line)) {
+                        if (line.find("</ALFABETO>") != std::string::npos) {
+                            break;
+                        }
+                        size_t start = line.find("|");
                         if (start != std::string::npos) {
-                            start += strlen("TOKEN FOUND: ");
-                            std::string simbolo = line.substr(start);
-                            std::getline(tokensFile, line);  // Lee la siguiente línea
-                            start = line.find("TOKEN FOUND: ");
-                            if (start != std::string::npos) {
-                                start += strlen("TOKEN FOUND: ");
-                                std::string estadoSiguiente = line.substr(start);
-                                transiciones.push_back(std::make_tuple(estadoActual, simbolo, estadoSiguiente));
+                            start++; // Avanza un carácter para omitir el '|'
+                            alfabeto += line.substr(start) + ", ";
+                        }
+                    }
+                } else if (lineData.find("<ESTADO>") != std::string::npos) {
+                    while (std::getline(tokensFile, line)) {
+                        if (line.find("</ESTADO>") != std::string::npos) {
+                            break;
+                        }
+                        size_t start = line.find("|");
+                        if (start != std::string::npos) {
+                            start++; // Avanza un carácter para omitir el '|'
+                            estados.push_back(line.substr(start));
+                        }
+                    }
+                } else if (lineData.find("<INICIAL>") != std::string::npos) {
+                    while (std::getline(tokensFile, line)) {
+                        if (line.find("</INICIAL>") != std::string::npos) {
+                            break;
+                        }
+                        size_t start = line.find("|");
+                        if (start != std::string::npos) {
+                            start++; // Avanza un carácter para omitir el '|'
+                            estadoInicial = line.substr(start);
+                        }
+                    }
+                } else if (lineData.find("<FINAL>") != std::string::npos) {
+                    while (std::getline(tokensFile, line)) {
+                        if (line.find("</FINAL>") != std::string::npos) {
+                            break;
+                        }
+                        size_t start = line.find("|");
+                        if (start != std::string::npos) {
+                            start++; // Avanza un carácter para omitir el '|'
+                            estadosFinales.push_back(line.substr(start));
+                        }
+                    }
+                } else if (lineData.find("<TRANSICIONES>") != std::string::npos) {
+                    while (std::getline(tokensFile, line)) {
+                        if (line.find("</TRANSICIONES>") != std::string::npos) {
+                            break;
+                        }
+                        size_t start = line.find("|");
+                        if (start != std::string::npos) {
+                            start++; // Avanza un carácter para omitir el '|'
+                            std::string estadoActual = line.substr(start);
+                            std::getline(tokensFile, line); // Lee la siguiente línea
+                            size_t startSimbolo = line.find("|");
+                            if (startSimbolo != std::string::npos) {
+                                startSimbolo++; // Avanza un carácter para omitir el '|'
+                                std::string simbolo = line.substr(startSimbolo);
+                                std::getline(tokensFile, line); // Lee la siguiente línea
+                                size_t startEstadoSiguiente = line.find("|");
+                                if (startEstadoSiguiente != std::string::npos) {
+                                    startEstadoSiguiente++; // Avanza un carácter para omitir el '|'
+                                    std::string estadoSiguiente = line.substr(startEstadoSiguiente);
+                                    transiciones.push_back(std::make_tuple(estadoActual, simbolo, estadoSiguiente));
+                                }
                             }
                         }
                     }
@@ -269,6 +284,9 @@ void createHTMLWithTransitionTable() {
     }
     outputFile << "</table>\n";
 
+    generateGraph(transiciones, estadoInicial, estadosFinales);
+
+    outputFile << "<img src='graph.png' />";
     // Agrega las etiquetas HTML finales al archivo de salida
     outputFile << "</body>\n";
     outputFile << "</html>\n";
