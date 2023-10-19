@@ -8,21 +8,35 @@
 extern int lineno, line_init;
 
 extern char str_buf[256];
+<<<<<<< Updated upstream
 extern char* str_buf_ptr;
 
 char* tokens_alfabetos[100];
+=======
+extern char *str_buf_ptr;
+
+char *tokens_alfabetos[100];
+>>>>>>> Stashed changes
 int num_tokens_alfabetos = 0;
-char* tokens_estados[100];
+char *tokens_estados[100];
 int num_tokens_estados = 0;
-char* tokens_inicial[100];
+char *tokens_inicial[100];
 int num_tokens_inicial = 0;
+<<<<<<< Updated upstream
 char* tokens_final[100];
+=======
+char *tokens_final[100];
+>>>>>>> Stashed changes
 int num_tokens_final = 0;
 char tokens_transicional[100];
 int num_tokens_transicional = 0;
 char tokens_afn[100];
 int num_tokens_afn = 0;
+<<<<<<< Updated upstream
 char* tokens_epsilon[100];
+=======
+char *tokens_epsilon[100];
+>>>>>>> Stashed changes
 int num_tokens_epsilon = 0;
 FILE *vitacora_errores_file = NULL;
 
@@ -38,6 +52,7 @@ int scope = 0;
 int pos_number = 0;
 int flag = 0;
 int valueflag = 0;
+<<<<<<< Updated upstream
 char* strint;
 
 int found_match = 0;
@@ -49,6 +64,22 @@ int found_match = 0;
    float floatval;
    char charval;
    char *strval;
+=======
+char *strint;
+
+int found_match = 0;
+//%error-verbose
+void yyerror(const char *message);
+%}
+
+%define parse.error verbose
+
+%union {
+    int intval;
+    float floatval;
+    char charval;
+    char *strval;
+>>>>>>> Stashed changes
 }
 
 %token <strval> T_AUTOMATA_AFN_OP
@@ -66,12 +97,16 @@ int found_match = 0;
 
 %token <strval> T_EPSILON
 
-%token <strval> T_COMMA                    ","
+%token <strval> T_COMMA ","
 %token <strval> T_INT
 %token <strval> T_STRING
 
+<<<<<<< Updated upstream
 %token <strval> T_ERROR
 %token <strval> T_EOF          0           "end of file"
+=======
+%token <strval> T_EOF 0 "end of file"
+>>>>>>> Stashed changes
 
 %type alfabeto alfabetoatr estado estadoatr inicial final atributofin transiciones
 %start programa
@@ -83,80 +118,76 @@ programa: T_AUTOMATA_AFN_OP alfabeto estado inicial final transiciones T_AUTOMAT
 alfabeto: T_ALFABETO_OP alfabetoatr T_ALFABETO_END
 
 alfabetoatr: T_STRING T_STRING {
-            tokens_alfabetos[num_tokens_alfabetos++] = strdup($1);
-            tokens_alfabetos[num_tokens_alfabetos++] = strdup($2);
-        }
-        | T_STRING T_STRING T_STRING T_STRING {
-            tokens_alfabetos[num_tokens_alfabetos++] = strdup($1);
-            tokens_alfabetos[num_tokens_alfabetos++] = strdup($2);
-            tokens_alfabetos[num_tokens_alfabetos++] = strdup($3);
-            tokens_alfabetos[num_tokens_alfabetos++] = strdup($4);
-        }
-        | T_STRING T_STRING T_STRING  {
-            tokens_alfabetos[num_tokens_alfabetos++] = strdup($1);
-            tokens_alfabetos[num_tokens_alfabetos++] = strdup($2);
-            tokens_alfabetos[num_tokens_alfabetos++] = strdup($3);
-        };
+    tokens_alfabetos[num_tokens_alfabetos++] = strdup($1);
+    tokens_alfabetos[num_tokens_alfabetos++] = strdup($2);
+}
+| T_STRING T_STRING T_STRING T_STRING {
+    tokens_alfabetos[num_tokens_alfabetos++] = strdup($1);
+    tokens_alfabetos[num_tokens_alfabetos++] = strdup($2);
+    tokens_alfabetos[num_tokens_alfabetos++] = strdup($3);
+    tokens_alfabetos[num_tokens_alfabetos++] = strdup($4);
+}
+| T_STRING T_STRING T_STRING {
+    tokens_alfabetos[num_tokens_alfabetos++] = strdup($1);
+    tokens_alfabetos[num_tokens_alfabetos++] = strdup($2);
+    tokens_alfabetos[num_tokens_alfabetos++] = strdup($3);
+};
 
 estado: T_ESTADO_OP estadoatr T_ESTADO_END
 
 estadoatr: T_INT T_INT {
-            tokens_estados[num_tokens_estados++] = strdup($1);
-            tokens_estados[num_tokens_estados++] = strdup($2);
-        }
-        | T_INT T_INT T_INT T_INT {
-            tokens_estados[num_tokens_estados++] = strdup($1);
-            tokens_estados[num_tokens_estados++] = strdup($2);
-            tokens_estados[num_tokens_estados++] = strdup($3);
-            tokens_estados[num_tokens_estados++] = strdup($4);
-        }
-        | T_INT T_INT T_INT {
-            tokens_estados[num_tokens_estados++] = strdup($1);
-            tokens_estados[num_tokens_estados++] = strdup($2);
-            tokens_estados[num_tokens_estados++] = strdup($3);
-        };
+    tokens_estados[num_tokens_estados++] = strdup($1);
+    tokens_estados[num_tokens_estados++] = strdup($2);
+}
+| T_INT T_INT T_INT T_INT {
+    tokens_estados[num_tokens_estados++] = strdup($1);
+    tokens_estados[num_tokens_estados++] = strdup($2);
+    tokens_estados[num_tokens_estados++] = strdup($3);
+    tokens_estados[num_tokens_estados++] = strdup($4);
+}
+| T_INT T_INT T_INT {
+    tokens_estados[num_tokens_estados++] = strdup($1);
+    tokens_estados[num_tokens_estados++] = strdup($2);
+    tokens_estados[num_tokens_estados++] = strdup($3);
+};
 
-inicial: T_INICIAL_OP T_INT T_INICIAL_END{
-            tokens_inicial[num_tokens_inicial++] = strdup($2);
-        };
+inicial: T_INICIAL_OP T_INT T_INICIAL_END {
+    tokens_inicial[num_tokens_inicial++] = strdup($2);
+};
 
 final: T_FINAL_OP atributofin T_FINAL_END
 
 atributofin: T_INT {
-                    tokens_final[num_tokens_final++] = strdup($1);
-                }
-                | T_INT T_INT {
-                    tokens_final[num_tokens_final++] = strdup($1);
-                    tokens_final[num_tokens_final++] = strdup($2);
-                }
-                |T_INT T_INT T_INT{
-                    tokens_final[num_tokens_final++] = strdup($1);
-                    tokens_final[num_tokens_final++] = strdup($2);
-                    tokens_final[num_tokens_final++] = strdup($3);
-                };
+    tokens_final[num_tokens_final++] = strdup($1);
+}
+| T_INT T_INT {
+    tokens_final[num_tokens_final++] = strdup($1);
+    tokens_final[num_tokens_final++] = strdup($2);
+}
+| T_INT T_INT T_INT {
+    tokens_final[num_tokens_final++] = strdup($1);
+    tokens_final[num_tokens_final++] = strdup($2);
+    tokens_final[num_tokens_final++] = strdup($3);
+};
 
 transiciones: T_TRANSICIONES_OP transatr T_TRANSICIONES_END
 
-transatr: T_INT T_STRING T_INT 
-                         {
+transatr: T_INT T_STRING T_INT {
+    char concatenated_values[100];
+    sprintf(concatenated_values, "%d %s %d", atoi($1), $2, atoi($3));
 
-                            char concatenated_values[100]; 
-                            sprintf(concatenated_values, "%d %s %d", atoi($1), $2, atoi($3));
+    int error_line = lineno;
 
-                            int error_line = lineno;
+    int valid_char = 0; // Variable para verificar si el carácter es válido
 
-                            if (strcmp($2, tokens_alfabetos[0]) != 0 && strcmp($2, tokens_alfabetos[1]) != 0 && strcmp($2, tokens_alfabetos[2]) != 0 && strcmp($2, tokens_alfabetos[3]) != 0 ){
-                                char error_message[100];
-                                sprintf(error_message, "One CHARACTER at line %d does not match values %s, %s, %s or %s that were entered in ALFABETO found %s ", error_line, tokens_alfabetos[0], tokens_alfabetos[1],tokens_alfabetos[2],tokens_alfabetos[3], $2);
-                                yyerror(error_message);
-                            }else{
-                                tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
-                            }
-                         } transatr
-                         | T_INT T_EPSILON T_INT {
-                            char concatenated_values[100]; 
-                            sprintf(concatenated_values, "%d %s %d", atoi($1), $2, atoi($3));
+    for (int i = 0; i < num_tokens_alfabetos; i++) {
+        if (strcmp($2, tokens_alfabetos[i]) == 0) {
+            valid_char = 1; // El carácter es válido
+            break;
+        }
+    }
 
+<<<<<<< Updated upstream
                             int error_line = lineno;
 
                             // No se verifica el valor de $2 en este caso, ya que es un carácter especial
@@ -168,6 +199,38 @@ transatr: T_INT T_STRING T_INT
                              yyclearin;
                          }
                          | %empty;
+=======
+    if (!valid_char) {
+        char error_message[100];
+        sprintf(error_message, "One CHARACTER at line %d does not match values %s, %s, %s, or %s that were entered in ALFABETO; found %s", error_line, tokens_alfabetos[0], tokens_alfabetos[1], tokens_alfabetos[2], tokens_alfabetos[3], $2);
+        // No llamamos a yyerror aquí para evitar la detención del análisis
+        // Agrega el mensaje de error a una lista de errores si lo deseas
+        // fprintf(vitacora_errores_file, "-> ERROR at line %d: %s\n", lineno, error_message);
+        // error_count++;
+    } else {
+        tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
+    }
+} transatr
+| T_INT T_EPSILON T_INT {
+    char concatenated_values[100];
+    sprintf(concatenated_values, "%d %s %d", atoi($1), $2, atoi($3));
+
+    int error_line = lineno;
+
+    // Verifica si $2 es igual a "epsilon"
+    if (strcmp($2, "epsilon") != 0) {
+        char error_message[100];
+        sprintf(error_message, "One CHARACTER at line %d does not match values epsilon that were entered in ALFABETO; found %s", error_line, $2);
+        // No llamamos a yyerror aquí para evitar la detención del análisis
+        // Agrega el mensaje de error a una lista de errores si lo deseas
+        // fprintf(vitacora_errores_file, "-> ERROR at line %d: %s\n", lineno, error_message);
+        // error_count++;
+    } else {
+        tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
+    }
+} transatr
+| %empty;
+>>>>>>> Stashed changes
 
 %%
 
@@ -182,18 +245,32 @@ int main(int argc, char *argv[]) {
             return -1;
         }
     }
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
     yyparse();
 
     if (yyin != NULL) {
         fclose(yyin);
     }
 
+    // Imprime el número total de errores
+    printf("Total errors: %d\n", error_count);
+
+    if (error_count > 0) {
+        printf("Errors detected. Check the error log for details.\n");
+    }
+
     return 0;
 }
 
+<<<<<<< Updated upstream
 void yyerror(const char *message)
 {
+=======
+void yyerror(const char *message) {
+>>>>>>> Stashed changes
     error_count++;
 
     if (vitacora_errores_file == NULL) {
