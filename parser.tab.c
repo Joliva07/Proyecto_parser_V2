@@ -78,35 +78,21 @@
 extern int lineno, line_init;
 
 extern char str_buf[256];
-<<<<<<< Updated upstream
 extern char* str_buf_ptr;
 
 char* tokens_alfabetos[100];
-=======
-extern char *str_buf_ptr;
-
-char *tokens_alfabetos[100];
->>>>>>> Stashed changes
 int num_tokens_alfabetos = 0;
-char *tokens_estados[100];
+char* tokens_estados[100];
 int num_tokens_estados = 0;
-char *tokens_inicial[100];
+char* tokens_inicial[100];
 int num_tokens_inicial = 0;
-<<<<<<< Updated upstream
 char* tokens_final[100];
-=======
-char *tokens_final[100];
->>>>>>> Stashed changes
 int num_tokens_final = 0;
 char tokens_transicional[100];
 int num_tokens_transicional = 0;
 char tokens_afn[100];
 int num_tokens_afn = 0;
-<<<<<<< Updated upstream
 char* tokens_epsilon[100];
-=======
-char *tokens_epsilon[100];
->>>>>>> Stashed changes
 int num_tokens_epsilon = 0;
 FILE *vitacora_errores_file = NULL;
 
@@ -122,22 +108,12 @@ int scope = 0;
 int pos_number = 0;
 int flag = 0;
 int valueflag = 0;
-<<<<<<< Updated upstream
 char* strint;
 
 int found_match = 0;
 %error-verbose
 
 #line 117 "Parser.tab.c"
-=======
-char *strint;
-
-int found_match = 0;
-//%error-verbose
-void yyerror(const char *message);
-
-#line 118 "Parser.tab.c"
->>>>>>> Stashed changes
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -585,15 +561,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-<<<<<<< Updated upstream
        0,    81,    81,    83,    85,    89,    95,   101,   103,   107,
      113,   119,   123,   125,   128,   132,   138,   141,   140,   156,
      156,   166,   170
-=======
-       0,    83,    83,    85,    87,    91,    97,   103,   105,   109,
-     115,   121,   125,   127,   130,   134,   140,   142,   142,   168,
-     168,   186
->>>>>>> Stashed changes
 };
 #endif
 
@@ -1179,7 +1149,6 @@ yyreduce:
   switch (yyn)
     {
   case 4: /* alfabetoatr: T_STRING T_STRING  */
-<<<<<<< Updated upstream
 #line 85 "Parser.y"
                                {
             tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-1].strval));
@@ -1277,113 +1246,12 @@ yyreduce:
   case 17: /* $@1: %empty  */
 #line 141 "Parser.y"
                          {
-=======
-#line 87 "Parser.y"
-                               {
-    tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-1].strval));
-    tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[0].strval));
-}
-#line 1428 "Parser.tab.c"
-    break;
 
-  case 5: /* alfabetoatr: T_STRING T_STRING T_STRING T_STRING  */
-#line 91 "Parser.y"
-                                      {
-    tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-3].strval));
-    tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-2].strval));
-    tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-1].strval));
-    tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[0].strval));
-}
-#line 1439 "Parser.tab.c"
-    break;
+                            char concatenated_values[100]; 
+                            sprintf(concatenated_values, "%d %s %d", atoi((yyvsp[-2].strval)), (yyvsp[-1].strval), atoi((yyvsp[0].strval)));
 
-  case 6: /* alfabetoatr: T_STRING T_STRING T_STRING  */
-#line 97 "Parser.y"
-                             {
-    tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-2].strval));
-    tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[-1].strval));
-    tokens_alfabetos[num_tokens_alfabetos++] = strdup((yyvsp[0].strval));
-}
-#line 1449 "Parser.tab.c"
-    break;
+                            int error_line = lineno;
 
-  case 8: /* estadoatr: T_INT T_INT  */
-#line 105 "Parser.y"
-                       {
-    tokens_estados[num_tokens_estados++] = strdup((yyvsp[-1].strval));
-    tokens_estados[num_tokens_estados++] = strdup((yyvsp[0].strval));
-}
-#line 1458 "Parser.tab.c"
-    break;
-
-  case 9: /* estadoatr: T_INT T_INT T_INT T_INT  */
-#line 109 "Parser.y"
-                          {
-    tokens_estados[num_tokens_estados++] = strdup((yyvsp[-3].strval));
-    tokens_estados[num_tokens_estados++] = strdup((yyvsp[-2].strval));
-    tokens_estados[num_tokens_estados++] = strdup((yyvsp[-1].strval));
-    tokens_estados[num_tokens_estados++] = strdup((yyvsp[0].strval));
-}
-#line 1469 "Parser.tab.c"
-    break;
-
-  case 10: /* estadoatr: T_INT T_INT T_INT  */
-#line 115 "Parser.y"
-                    {
-    tokens_estados[num_tokens_estados++] = strdup((yyvsp[-2].strval));
-    tokens_estados[num_tokens_estados++] = strdup((yyvsp[-1].strval));
-    tokens_estados[num_tokens_estados++] = strdup((yyvsp[0].strval));
-}
-#line 1479 "Parser.tab.c"
-    break;
-
-  case 11: /* inicial: T_INICIAL_OP T_INT T_INICIAL_END  */
-#line 121 "Parser.y"
-                                          {
-    tokens_inicial[num_tokens_inicial++] = strdup((yyvsp[-1].strval));
-}
-#line 1487 "Parser.tab.c"
-    break;
-
-  case 13: /* atributofin: T_INT  */
-#line 127 "Parser.y"
-                   {
-    tokens_final[num_tokens_final++] = strdup((yyvsp[0].strval));
-}
-#line 1495 "Parser.tab.c"
-    break;
-
-  case 14: /* atributofin: T_INT T_INT  */
-#line 130 "Parser.y"
-              {
-    tokens_final[num_tokens_final++] = strdup((yyvsp[-1].strval));
-    tokens_final[num_tokens_final++] = strdup((yyvsp[0].strval));
-}
-#line 1504 "Parser.tab.c"
-    break;
-
-  case 15: /* atributofin: T_INT T_INT T_INT  */
-#line 134 "Parser.y"
-                    {
-    tokens_final[num_tokens_final++] = strdup((yyvsp[-2].strval));
-    tokens_final[num_tokens_final++] = strdup((yyvsp[-1].strval));
-    tokens_final[num_tokens_final++] = strdup((yyvsp[0].strval));
-}
-#line 1514 "Parser.tab.c"
-    break;
-
-  case 17: /* $@1: %empty  */
-#line 142 "Parser.y"
-                               {
-    char concatenated_values[100];
-    sprintf(concatenated_values, "%d %s %d", atoi((yyvsp[-2].strval)), (yyvsp[-1].strval), atoi((yyvsp[0].strval)));
->>>>>>> Stashed changes
-
-    int error_line = lineno;
-
-    int valid_char = 0; // Variable para verificar si el carácter es válido
-
-<<<<<<< Updated upstream
                             if (strcmp((yyvsp[-1].strval), tokens_alfabetos[0]) != 0 && strcmp((yyvsp[-1].strval), tokens_alfabetos[1]) != 0 && strcmp((yyvsp[-1].strval), tokens_alfabetos[2]) != 0 && strcmp((yyvsp[-1].strval), tokens_alfabetos[3]) != 0 ){
                                 char error_message[100];
                                 sprintf(error_message, "One CHARACTER at line %d does not match values %s, %s, %s or %s that were entered in ALFABETO found %s ", error_line, tokens_alfabetos[0], tokens_alfabetos[1],tokens_alfabetos[2],tokens_alfabetos[3], (yyvsp[-1].strval));
@@ -1400,38 +1268,9 @@ yyreduce:
                                                  {
                             char concatenated_values[100]; 
                             sprintf(concatenated_values, "%d %s %d", atoi((yyvsp[-2].strval)), (yyvsp[-1].strval), atoi((yyvsp[0].strval)));
-=======
-    for (int i = 0; i < num_tokens_alfabetos; i++) {
-        if (strcmp((yyvsp[-1].strval), tokens_alfabetos[i]) == 0) {
-            valid_char = 1; // El carácter es válido
-            break;
-        }
-    }
 
-    if (!valid_char) {
-        char error_message[100];
-        sprintf(error_message, "One CHARACTER at line %d does not match values %s, %s, %s, or %s that were entered in ALFABETO; found %s", error_line, tokens_alfabetos[0], tokens_alfabetos[1], tokens_alfabetos[2], tokens_alfabetos[3], (yyvsp[-1].strval));
-        // No llamamos a yyerror aquí para evitar la detención del análisis
-        // Agrega el mensaje de error a una lista de errores si lo deseas
-        // fprintf(vitacora_errores_file, "-> ERROR at line %d: %s\n", lineno, error_message);
-        // error_count++;
-    } else {
-        tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
-    }
-}
-#line 1545 "Parser.tab.c"
-    break;
+                            int error_line = lineno;
 
-  case 19: /* $@2: %empty  */
-#line 168 "Parser.y"
-                        {
-    char concatenated_values[100];
-    sprintf(concatenated_values, "%d %s %d", atoi((yyvsp[-2].strval)), (yyvsp[-1].strval), atoi((yyvsp[0].strval)));
->>>>>>> Stashed changes
-
-    int error_line = lineno;
-
-<<<<<<< Updated upstream
                             // No se verifica el valor de $2 en este caso, ya que es un carácter especial
 
                             tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
@@ -1450,25 +1289,6 @@ yyreduce:
 
 
 #line 1292 "Parser.tab.c"
-=======
-    // Verifica si $2 es igual a "epsilon"
-    if (strcmp((yyvsp[-1].strval), "epsilon") != 0) {
-        char error_message[100];
-        sprintf(error_message, "One CHARACTER at line %d does not match values epsilon that were entered in ALFABETO; found %s", error_line, (yyvsp[-1].strval));
-        // No llamamos a yyerror aquí para evitar la detención del análisis
-        // Agrega el mensaje de error a una lista de errores si lo deseas
-        // fprintf(vitacora_errores_file, "-> ERROR at line %d: %s\n", lineno, error_message);
-        // error_count++;
-    } else {
-        tokens_transicional[num_tokens_transicional++] = strdup(concatenated_values);
-    }
-}
-#line 1568 "Parser.tab.c"
-    break;
-
-
-#line 1572 "Parser.tab.c"
->>>>>>> Stashed changes
 
       default: break;
     }
@@ -1661,12 +1481,8 @@ yyreturnlab:
   return yyresult;
 }
 
-<<<<<<< Updated upstream
 #line 172 "Parser.y"
 
-=======
-#line 188 "Parser.y"
->>>>>>> Stashed changes
 
 int main(int argc, char *argv[]) {
     int choice;
@@ -1679,32 +1495,18 @@ int main(int argc, char *argv[]) {
             return -1;
         }
     }
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
     yyparse();
 
     if (yyin != NULL) {
         fclose(yyin);
     }
 
-    // Imprime el número total de errores
-    printf("Total errors: %d\n", error_count);
-
-    if (error_count > 0) {
-        printf("Errors detected. Check the error log for details.\n");
-    }
-
     return 0;
 }
 
-<<<<<<< Updated upstream
 void yyerror(const char *message)
 {
-=======
-void yyerror(const char *message) {
->>>>>>> Stashed changes
     error_count++;
 
     if (vitacora_errores_file == NULL) {
