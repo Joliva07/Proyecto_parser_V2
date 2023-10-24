@@ -2,7 +2,7 @@ rem Flex command
 flex lexico.l
 
 rem Bison command
-bison -d Parser.y
+bison -d parser.y
 
 rem GCC commands
 gcc -c lex.yy.c -o lex.yy.o

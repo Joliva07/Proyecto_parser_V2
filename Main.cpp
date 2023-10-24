@@ -20,6 +20,12 @@
 #include <cstdlib>
 #endif
 
+std::vector<std::string> alfabeto;
+std::vector<std::string> estados;
+std::string estadoInicial;
+std::vector<std::string> estadosFinales;
+std::map<std::string, std::map<std::string, std::string>> transiciones;
+
 bool isXML(const std::string& filename) {
     // Verifica si el archivo tiene extensión .xml
     if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".xml") {
@@ -124,14 +130,11 @@ void generateGraph(const std::vector<std::tuple<std::string, std::string, std::s
     int result = std::system("dot -Tpng graph.dot -o graph.png");
 
     if (result != 0) {
-        std::cerr << "Error al generar el gráfico." << std::endl;
+        std::cerr << "Error al generar el grafico." << std::endl;
     } else {
-        std::cout << "Se ha generado el gráfico 'graph.png'." << std::endl;
+        std::cout << "Se ha generado el grafico 'graph.png'." << std::endl;
     }
 }
-
-
-
 
 void createHTMLWithTransitionTable() {
     // Abre el archivo "vitacora_tokens.html" para lectura
@@ -298,21 +301,64 @@ void createHTMLWithTransitionTable() {
     std::cout << "Se ha creado el archivo 'output_with_table.html' con la tabla de transiciones." << std::endl;
 }
 
+void procesarHTML() {
+    std::ifstream entrada("output_with_table.html");
+    if (!entrada.is_open()) {
+        std::cerr << "No se pudo abrir el archivo de entrada." << std::endl;
+        return;
+    }
 
-void createAFN() {
-    // Aquí puedes agregar la lógica para crear un AFN (Automaton Finite State Network)
-    // Por ahora, esta función está vacía
-    std::cout << "Opcion 'Crear AFN' seleccionada. Funcionalidad en desarrollo." << std::endl;
-}
+    std::ofstream salida("conversion.html");
+    if (!salida.is_open()) {
+        std::cerr << "No se pudo abrir el archivo de salida." << std::endl;
+        entrada.close();
+        return;
+    }
 
-void showAFD() {
-    // Función para mostrar el AFD (Automaton Finite Deterministic) - Implementación pendiente
-    std::cout << "Opcion 'Mostrar AFD' seleccionada. Funcionalidad en desarrollo." << std::endl;
-}
+    std::string linea;
+    std::vector<std::string> lineasModificadas;
 
-void convertAFNtoAFD() {
-    // Función para convertir de AFN a AFD - Implementación pendiente
-    std::cout << "Opcion 'Pasar de AFN a AFD' seleccionada. Funcionalidad en desarrollo." << std::endl;
+    bool enTablaDeTransiciones = false;
+
+    while (std::getline(entrada, linea)) {
+        if (!enTablaDeTransiciones) {
+            // Buscar la entrada a la tabla de transiciones
+            lineasModificadas.push_back(linea);
+            if (linea.find("Tabla de Transiciones:") != std::string::npos) {
+                enTablaDeTransiciones = true;
+                // Agregar la cabecera de la tabla
+                lineasModificadas.push_back("<table border=\"1\">");
+                lineasModificadas.push_back("<tr><th>Estado Actual</th><th>Simbolo</th><th>Estado Siguiente</th></tr>");
+            }
+        } else {
+            if (linea.find("</table>") != std::string::npos) {
+                // Terminar de procesar la tabla de transiciones
+                enTablaDeTransiciones = false;
+                lineasModificadas.push_back("</table>");
+            } else if (linea.find("<tr><td>") != std::string::npos) {
+                // Procesar una fila de la tabla de transiciones
+                std::smatch match;
+                if (std::regex_search(linea, match, std::regex("<td> (\\d+)</td><td> ([^<]+)</td><td> (\\d+)</td>"))) {
+                    std::string estadoActual = "q" + match[1].str();
+                    std::string simbolo = match[2].str();
+                    std::string estadoSiguiente = "q" + match[3].str();
+
+                    if (simbolo != "&") {
+                        lineasModificadas.push_back("<tr><td>" + estadoActual + "</td><td>" + simbolo + "</td><td>" + estadoSiguiente + "</td></tr>");
+                    }
+                }
+            }
+        }
+    }
+
+    for (const std::string& lineaModificada : lineasModificadas) {
+        salida << lineaModificada << "\n";
+    }
+
+    entrada.close();
+    salida.close();
+
+    std::cout << "Conversion de AFN a AFD completa." << std::endl;
 }
 
 int main() {
@@ -323,18 +369,19 @@ int main() {
     std::string currentFilePath;
 
     while (true) {
-#ifdef _WIN32
+    #ifdef _WIN32
         std::system("cls");
-#else
+    #else
         std::system("clear");
-#endif
+    #endif
 
         std::cout << "\nMenu:\n";
         std::cout << "1. Seleccionar Archivo XML y Parsearlo\n";
         std::cout << "2. Crear AFN\n";
-        std::cout << "3. Mostrar AFD (en desarrollo)\n";
+        std::cout << "3. Mostrar AFN\n";
         std::cout << "4. Pasar de AFN a AFD (en desarrollo)\n";
-        std::cout << "5. Salir\n";
+        std::cout << "5. Mostrar AFD (en desarrollo)\n";
+        std::cout << "6. Salir\n";
         std::cout << "Seleccione una opcion: ";
 
         int choice;
@@ -367,7 +414,7 @@ int main() {
         std::cerr << "Error al construir o ejecutar el parser." << std::endl;
     }
     break;
-}
+    }
             case 2: {
                 // Llama a tu función para crear el AFN aquí
                 createHTMLWithTransitionTable();
@@ -381,13 +428,22 @@ int main() {
         std::cerr << "Error al abrir el archivo en el navegador." << std::endl;
     }
     break;
-}
+    }
             case 4: {
-                // Llama a la función para convertir de AFN a AFD (en desarrollo)
-                convertAFNtoAFD();
+                // Llama a tu función para crear el AFN aquí
+                procesarHTML();
                 break;
             }
             case 5: {
+                // Abre el archivo "output_with_table.html" en el navegador predeterminado
+    int result = system("start conversion.html");
+
+    if (result != 0) {
+        std::cerr << "Error al abrir el archivo en el navegador." << std::endl;
+    }
+    break;
+            }
+            case 6: {
                 std::cout << "Saliendo del programa. Hasta luego!" << std::endl;
                 return 0;
             }
