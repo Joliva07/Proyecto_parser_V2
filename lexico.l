@@ -58,7 +58,7 @@ WHITESPACE          [ \t]
 
 
 [0-9]+		                                                 {token_print(T_INT); yylval.strval=strdup(yytext); close_vitacora_file(); return T_INT;}
-[a-zA-Z]                                                     { token_print(T_STRING); yylval.strval=strdup(yytext); close_vitacora_file(); return T_STRING;}
+[a-zA-Z]+                                                     { token_print(T_STRING); yylval.strval=strdup(yytext); close_vitacora_file(); return T_STRING;}
 
 
 [  \t]+                     {   }  

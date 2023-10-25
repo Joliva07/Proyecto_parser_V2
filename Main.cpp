@@ -27,7 +27,6 @@ std::vector<std::string> estadosFinales;
 std::map<std::string, std::map<std::string, std::string>> transiciones;
 
 bool isXML(const std::string& filename) {
-    // Verifica si el archivo tiene extensión .xml
     if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".xml") {
         std::ifstream fileStream(filename);
         if (fileStream.is_open()) {
@@ -56,26 +55,22 @@ std::string extractFileName(const std::string& filePath) {
     return filePath;
 }
 
-void generateGraph(const std::vector<std::tuple<std::string, std::string, std::string>>& transiciones,
+void AFNGraph(const std::vector<std::tuple<std::string, std::string, std::string>>& transiciones,
                   const std::string& estadoInicial,
                   const std::vector<std::string>& estadosFinales) {
-    // Abre un archivo DOT para escribir el grafo
-    std::ofstream dotFile("graph.dot");
+    std::ofstream dotFile("AFN.dot");
     if (!dotFile.is_open()) {
-        std::cerr << "Error: No se pudo abrir el archivo 'graph.dot'." << std::endl;
+        std::cerr << "Error: No se pudo abrir el archivo 'AFN.dot'." << std::endl;
         return;
     }
 
-    // Escribe el encabezado del archivo DOT
     dotFile << "digraph G {\n";
+    dotFile << "  rankdir=LR;\n";
 
-    // Conjunto de estados finales
     std::set<std::string> estadosFinalesSet(estadosFinales.begin(), estadosFinales.end());
 
-    // Mapa para redirigir transiciones
     std::unordered_map<std::string, std::string> redirigirTransiciones;
 
-    // Agrega nodos al grafo
     for (const auto& transicion : transiciones) {
         std::string estadoActual = std::get<0>(transicion);
         std::string simbolo = std::get<1>(transicion);
@@ -84,12 +79,9 @@ void generateGraph(const std::vector<std::tuple<std::string, std::string, std::s
         dotFile << "  \"" << estadoActual << "\" [shape=ellipse];\n";
         dotFile << "  \"" << estadoSiguiente << "\" [shape=ellipse];\n";
 
-        // Si la transición va de un estado final a otro estado final, redirige a un estado no final.
         if (estadosFinalesSet.count(estadoActual) != 0 && estadosFinalesSet.count(estadoSiguiente) != 0) {
-            // Encuentra un estado no final para redirigir la transición
             std::string estadoRedireccionado = estadoActual;
             while (estadosFinalesSet.count(estadoRedireccionado) != 0 || estadoRedireccionado == estadoInicial) {
-                // Encuentra el estado anterior al estado redireccionado
                 for (const auto& t : transiciones) {
                     if (std::get<2>(t) == estadoRedireccionado) {
                         estadoRedireccionado = std::get<0>(t);
@@ -101,7 +93,6 @@ void generateGraph(const std::vector<std::tuple<std::string, std::string, std::s
             redirigirTransiciones[estadoActual] = estadoRedireccionado;
         }
 
-        // Agrega conexiones entre nodos
         if (redirigirTransiciones.count(estadoActual) != 0) {
             dotFile << "  \"" << redirigirTransiciones[estadoActual] << "\" -> \"" << estadoSiguiente << "\" [label=\"" << simbolo << "\"];\n";
         } else {
@@ -109,11 +100,9 @@ void generateGraph(const std::vector<std::tuple<std::string, std::string, std::s
         }
     }
 
-    // Agrega el estado inicial con una flecha
     dotFile << "  start [shape=none, label=\"\", width=0, height=0];\n";
     dotFile << "  start -> \"" << estadoInicial << "\" [label=\"Inicio\", dir=none];\n";
 
-    // Agrega los estados finales con un doble círculo
     for (const std::string& estadoFinal : estadosFinales) {
         if (redirigirTransiciones.count(estadoFinal) != 0) {
             dotFile << "  \"" << estadoFinal << "\" [shape=doublecircle];\n";
@@ -122,22 +111,19 @@ void generateGraph(const std::vector<std::tuple<std::string, std::string, std::s
         }
     }
 
-    // Cierra el grafo DOT
     dotFile << "}\n";
     dotFile.close();
 
-    // Genera el gráfico en formato PNG
-    int result = std::system("dot -Tpng graph.dot -o graph.png");
+    int result = std::system("dot -Tpng AFN.dot -o AFN.png");
 
     if (result != 0) {
         std::cerr << "Error al generar el grafico." << std::endl;
     } else {
-        std::cout << "Se ha generado el grafico 'graph.png'." << std::endl;
+        std::cout << "Se ha generado el grafico 'AFN.png'." << std::endl;
     }
 }
 
-void createHTMLWithTransitionTable() {
-    // Abre el archivo "vitacora_tokens.html" para lectura
+void AFN() {
     std::ifstream tokensFile("vitacora_tokens.html");
 
     if (!tokensFile.is_open()) {
@@ -145,16 +131,14 @@ void createHTMLWithTransitionTable() {
         return;
     }
 
-    // Abre un nuevo archivo HTML para escritura
-    std::ofstream outputFile("output_with_table.html");
+    std::ofstream outputFile("dibujo.html");
 
     if (!outputFile.is_open()) {
-        std::cerr << "Error: No se pudo crear el archivo 'output_with_table.html'." << std::endl;
-        tokensFile.close();  // Importante: Cerrar el archivo antes de salir
+        std::cerr << "Error: No se pudo crear el archivo 'dibujo.html'." << std::endl;
+        tokensFile.close();
         return;
     }
 
-    // Agrega las etiquetas HTML iniciales al archivo de salida
     outputFile << "<!DOCTYPE html>\n";
     outputFile << "<html>\n";
     outputFile << "<head>\n";
@@ -170,15 +154,11 @@ void createHTMLWithTransitionTable() {
     std::vector<std::tuple<std::string, std::string, std::string>> transiciones;
 
     while (std::getline(tokensFile, line)) {
-        // Encuentra la posición del primer '|'
         size_t found = line.find("|");
         if (found != std::string::npos) {
-            // Obtiene la información después del '|'
             std::string lineData = line.substr(found + 1);
 
-            // Comprueba que la cadena sea lo suficientemente larga antes de procesarla
             if (lineData.size() > 0) {
-                // Procesa la información basada en el contenido después del '|'
                 if (lineData.find("<ALFABETO>") != std::string::npos) {
                     while (std::getline(tokensFile, line)) {
                         if (line.find("</ALFABETO>") != std::string::npos) {
@@ -186,7 +166,7 @@ void createHTMLWithTransitionTable() {
                         }
                         size_t start = line.find("|");
                         if (start != std::string::npos) {
-                            start++; // Avanza un carácter para omitir el '|'
+                            start++; 
                             alfabeto += line.substr(start) + ", ";
                         }
                     }
@@ -197,7 +177,7 @@ void createHTMLWithTransitionTable() {
                         }
                         size_t start = line.find("|");
                         if (start != std::string::npos) {
-                            start++; // Avanza un carácter para omitir el '|'
+                            start++; 
                             estados.push_back(line.substr(start));
                         }
                     }
@@ -208,7 +188,7 @@ void createHTMLWithTransitionTable() {
                         }
                         size_t start = line.find("|");
                         if (start != std::string::npos) {
-                            start++; // Avanza un carácter para omitir el '|'
+                            start++; 
                             estadoInicial = line.substr(start);
                         }
                     }
@@ -219,7 +199,7 @@ void createHTMLWithTransitionTable() {
                         }
                         size_t start = line.find("|");
                         if (start != std::string::npos) {
-                            start++; // Avanza un carácter para omitir el '|'
+                            start++; 
                             estadosFinales.push_back(line.substr(start));
                         }
                     }
@@ -230,17 +210,17 @@ void createHTMLWithTransitionTable() {
                         }
                         size_t start = line.find("|");
                         if (start != std::string::npos) {
-                            start++; // Avanza un carácter para omitir el '|'
+                            start++; 
                             std::string estadoActual = line.substr(start);
-                            std::getline(tokensFile, line); // Lee la siguiente línea
+                            std::getline(tokensFile, line); 
                             size_t startSimbolo = line.find("|");
                             if (startSimbolo != std::string::npos) {
-                                startSimbolo++; // Avanza un carácter para omitir el '|'
+                                startSimbolo++; 
                                 std::string simbolo = line.substr(startSimbolo);
-                                std::getline(tokensFile, line); // Lee la siguiente línea
+                                std::getline(tokensFile, line); 
                                 size_t startEstadoSiguiente = line.find("|");
                                 if (startEstadoSiguiente != std::string::npos) {
-                                    startEstadoSiguiente++; // Avanza un carácter para omitir el '|'
+                                    startEstadoSiguiente++; 
                                     std::string estadoSiguiente = line.substr(startEstadoSiguiente);
                                     transiciones.push_back(std::make_tuple(estadoActual, simbolo, estadoSiguiente));
                                 }
@@ -252,7 +232,6 @@ void createHTMLWithTransitionTable() {
         }
     }
 
-    // Genera la estructura del HTML con los datos procesados
     outputFile << "<h2>Alfabeto:</h2>\n";
     outputFile << "<ul>\n";
     std::istringstream alfabetoStream(alfabeto);
@@ -287,22 +266,20 @@ void createHTMLWithTransitionTable() {
     }
     outputFile << "</table>\n";
 
-    generateGraph(transiciones, estadoInicial, estadosFinales);
+    AFNGraph(transiciones, estadoInicial, estadosFinales);
 
-    outputFile << "<img src='graph.png' />";
-    // Agrega las etiquetas HTML finales al archivo de salida
+    outputFile << "<img src='AFN.png' />";
     outputFile << "</body>\n";
     outputFile << "</html>\n";
 
-    // Cierra ambos archivos
     tokensFile.close();
     outputFile.close();
 
-    std::cout << "Se ha creado el archivo 'output_with_table.html' con la tabla de transiciones." << std::endl;
+    std::cout << "Se ha creado el archivo 'dibujo.html' con la tabla de transiciones." << std::endl;
 }
 
-void procesarHTML() {
-    std::ifstream entrada("output_with_table.html");
+void AFD() {
+    std::ifstream entrada("dibujo.html");
     if (!entrada.is_open()) {
         std::cerr << "No se pudo abrir el archivo de entrada." << std::endl;
         return;
@@ -326,11 +303,9 @@ void procesarHTML() {
             salida << linea << "\n";
         } else if (enTablaDeTransiciones) {
             if (linea.find("</table>") != std::string::npos) {
-                // Terminar de procesar la tabla de transiciones
                 enTablaDeTransiciones = false;
                 salida << linea << "\n";
             } else if (linea.find("<tr><td>") != std::string::npos) {
-                // Procesar una fila de la tabla de transiciones
                 std::smatch match;
                 if (std::regex_search(linea, match, std::regex("<td> (\\d+)</td><td> ([^<]+)</td><td> (\\d+)</td>"))) {
                     std::string estadoActual = "q" + match[1].str();
@@ -345,7 +320,6 @@ void procesarHTML() {
                 salida << linea << "\n";
             }
         } else if (linea.find("<h2>Alfabeto:") != std::string::npos) {
-            // Procesar la lista del alfabeto
             enTablaDeTransiciones = false;
             salida << linea << "\n";
             while (std::getline(entrada, linea)) {
@@ -360,9 +334,8 @@ void procesarHTML() {
                 }
             }
         } else if (linea.find("<h2>Estado Inicial:") != std::string::npos) {
-            // Procesar el Estado Inicial
             enTablaDeTransiciones = false;
-            std::getline(entrada, linea); // Leer la línea siguiente
+            std::getline(entrada, linea); 
             std::smatch match;
             if (std::regex_search(linea, match, std::regex("<p> (\\d+)</p>")) || std::regex_search(linea, match, std::regex("<p>q(\\d+)</p>"))) {
                 std::string estadoInicial = "q" + match[1].str();
@@ -375,11 +348,9 @@ void procesarHTML() {
             salida << linea << "\n";
         } else if (enEstadosFinales) {
             if (linea.find("</ul>") != std::string::npos) {
-                // Terminar de procesar la lista de Estados Finales
                 enEstadosFinales = false;
                 salida << linea << "\n";
             } else if (linea.find("<li>") != std::string::npos) {
-                // Procesar un elemento de la lista de Estados Finales
                 std::smatch match;
                 if (std::regex_search(linea, match, std::regex("<li> (\\d+)</li>")) || std::regex_search(linea, match, std::regex("<li>q(\\d+)</li>"))) {
                     std::string estado = "q" + match[1].str();
@@ -388,21 +359,94 @@ void procesarHTML() {
             } else {
                 salida << linea << "\n";
             }
+        } else if (linea.find("<img src='AFN.png' />") != std::string::npos) {
         } else {
             salida << linea << "\n";
         }
     }
 
+    salida << "<img src='AFD.png' />" << "\n";
+
     entrada.close();
     salida.close();
 
-    std::cout << "Conversion AFN a AFD completada." << std::endl;
+    std::cout << "Se ha procesado la conversion de AFN a AFD excitosamente." << std::endl;
 }
 
+void AFDGraph() {
+    std::ifstream inputFile("conversion.html");
+
+    if (!inputFile.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo 'conversion.html'." << std::endl;
+        return;
+    }
+
+    std::ofstream dotFile("AFD.dot");
+    if (!dotFile.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo 'AFD.dot'." << std::endl;
+        inputFile.close();
+        return;
+    }
+
+    dotFile << "digraph G {\n";
+    dotFile << "  rankdir=LR;\n";
+
+    std::string initialState;
+    std::vector<std::string> finalStates;
+
+    std::string line;
+
+    bool inTransitionTable = false;
+
+    while (std::getline(inputFile, line)) {
+        if (line.find("<h2>Estado Inicial:") != std::string::npos) {
+            std::getline(inputFile, line); 
+            if (line.find("<p>") != std::string::npos) {
+                initialState = line.substr(line.find("<p>") + 3, 2);
+            }
+        } else if (line.find("<h2>Estados Finales:") != std::string::npos) {
+            std::getline(inputFile, line); 
+            while (line.find("<li>") != std::string::npos) {
+                finalStates.push_back(line.substr(line.find("<li>") + 4, 2));
+                std::getline(inputFile, line); 
+            }
+        } else if (line.find("<h2>Tabla de Transiciones:") != std::string::npos) {
+            inTransitionTable = true;
+            std::getline(inputFile, line); 
+            std::getline(inputFile, line); 
+        } else if (inTransitionTable && std::regex_search(line, std::regex("<tr><td>(q\\d+)</td><td>([a-zA-Z])</td><td>(q\\d+)</td>"))) {
+            std::smatch match;
+            if (std::regex_search(line, match, std::regex("<td>(q\\d+)</td><td>([a-zA-Z])</td><td>(q\\d+)</td>"))) {
+                std::string currentState = match[1].str();
+                std::string symbol = match[2].str();
+                std::string nextState = match[3].str();
+                dotFile << "  \"" << currentState << "\" -> \"" << nextState << "\" [label=\"" << symbol << "\"];\n";
+            }
+        }
+    }
+
+    dotFile << "  start [shape=none, label=\"\", width=0, height=0];\n";
+    dotFile << "  start -> \"" << initialState << "\" [label=\"Inicio\", dir=none];\n";
+    for (const std::string& finalState : finalStates) {
+        dotFile << "  \"" << finalState << "\" [shape=doublecircle];\n";
+    }
+
+    dotFile << "}\n";
+    dotFile.close();
+    inputFile.close();
+
+    int result = std::system("dot -Tpng AFD.dot -o AFD.png");
+
+    if (result != 0) {
+        std::cerr << "Error al generar el grafico." << std::endl;
+    } else {
+        std::cout << "Se ha generado el grafico 'AFD.png'." << std::endl;
+    }
+}
 
 int main() {
     std::cout << "Bienvenido al programa de manejo de archivos y operaciones AFN." << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(2)); // Espera de 2 segundos
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     std::string currentFile;
     std::string currentFilePath;
@@ -418,8 +462,8 @@ int main() {
         std::cout << "1. Seleccionar Archivo XML y Parsearlo\n";
         std::cout << "2. Crear AFN\n";
         std::cout << "3. Mostrar AFN\n";
-        std::cout << "4. Pasar de AFN a AFD (en desarrollo)\n";
-        std::cout << "5. Mostrar AFD (en desarrollo)\n";
+        std::cout << "4. Pasar de AFN a AFD\n";
+        std::cout << "5. Mostrar AFD\n";
         std::cout << "6. Salir\n";
         std::cout << "Seleccione una opcion: ";
 
@@ -430,7 +474,6 @@ int main() {
 
         switch (choice) {
             case 1: {
-    // Ejecutar el archivo batch que construye el parser
     int result = system("build_parser.bat");
 
     if (result == 0) {
@@ -441,13 +484,11 @@ int main() {
     break;
     }
             case 2: {
-                // Llama a tu función para crear el AFN aquí
-                createHTMLWithTransitionTable();
+                AFN();
                 break;
             }
             case 3: {
-    // Abre el archivo "output_with_table.html" en el navegador predeterminado
-    int result = system("start output_with_table.html");
+    int result = system("start dibujo.html");
 
     if (result != 0) {
         std::cerr << "Error al abrir el archivo en el navegador." << std::endl;
@@ -455,12 +496,11 @@ int main() {
     break;
     }
             case 4: {
-                // Llama a tu función para crear el AFN aquí
-                procesarHTML();
+                AFD();
+                AFDGraph();
                 break;
             }
             case 5: {
-                // Abre el archivo "output_with_table.html" en el navegador predeterminado
     int result = system("start conversion.html");
 
     if (result != 0) {
@@ -479,7 +519,7 @@ int main() {
         }
 
         std::cout << "Presiona Enter para continuar...";
-        std::cin.get(); // Espera hasta que el usuario presione Enter
+        std::cin.get();
     }
 
     return 0;

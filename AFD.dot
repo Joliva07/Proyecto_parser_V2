@@ -1,0 +1,9 @@
+digraph G {
+  rankdir=LR;
+  "q0" -> "q0" [label="a"];
+  "q0" -> "q1" [label="a"];
+  "q0" -> "q0" [label="b"];
+  "q2" -> "q3" [label="a"];
+  start [shape=none, label="", width=0, height=0];
+  start -> "q0" [label="Inicio", dir=none];
+}
