@@ -316,25 +316,19 @@ void procesarHTML() {
     }
 
     std::string linea;
-    std::vector<std::string> lineasModificadas;
 
     bool enTablaDeTransiciones = false;
+    bool enEstadosFinales = false;
 
     while (std::getline(entrada, linea)) {
-        if (!enTablaDeTransiciones) {
-            // Buscar la entrada a la tabla de transiciones
-            lineasModificadas.push_back(linea);
-            if (linea.find("Tabla de Transiciones:") != std::string::npos) {
-                enTablaDeTransiciones = true;
-                // Agregar la cabecera de la tabla
-                lineasModificadas.push_back("<table border=\"1\">");
-                lineasModificadas.push_back("<tr><th>Estado Actual</th><th>Simbolo</th><th>Estado Siguiente</th></tr>");
-            }
-        } else {
+        if (linea.find("Tabla de Transiciones:") != std::string::npos) {
+            enTablaDeTransiciones = true;
+            salida << linea << "\n";
+        } else if (enTablaDeTransiciones) {
             if (linea.find("</table>") != std::string::npos) {
                 // Terminar de procesar la tabla de transiciones
                 enTablaDeTransiciones = false;
-                lineasModificadas.push_back("</table>");
+                salida << linea << "\n";
             } else if (linea.find("<tr><td>") != std::string::npos) {
                 // Procesar una fila de la tabla de transiciones
                 std::smatch match;
@@ -344,22 +338,67 @@ void procesarHTML() {
                     std::string estadoSiguiente = "q" + match[3].str();
 
                     if (simbolo != "&") {
-                        lineasModificadas.push_back("<tr><td>" + estadoActual + "</td><td>" + simbolo + "</td><td>" + estadoSiguiente + "</td></tr>");
+                        salida << "<tr><td>" << estadoActual << "</td><td>" << simbolo << "</td><td>" << estadoSiguiente << "</td></tr>" << "\n";
+                    }
+                }
+            } else {
+                salida << linea << "\n";
+            }
+        } else if (linea.find("<h2>Alfabeto:") != std::string::npos) {
+            // Procesar la lista del alfabeto
+            enTablaDeTransiciones = false;
+            salida << linea << "\n";
+            while (std::getline(entrada, linea)) {
+                if (linea.find("</ul>") != std::string::npos) {
+                    break;
+                } else if (linea.find("<li>") != std::string::npos) {
+                    std::smatch match;
+                    if (std::regex_search(linea, match, std::regex("<li> ([^<]+)</li>"))) {
+                        std::string simbolo = match[1].str();
+                        salida << "<li>" << simbolo << "</li>" << "\n";
                     }
                 }
             }
+        } else if (linea.find("<h2>Estado Inicial:") != std::string::npos) {
+            // Procesar el Estado Inicial
+            enTablaDeTransiciones = false;
+            std::getline(entrada, linea); // Leer la línea siguiente
+            std::smatch match;
+            if (std::regex_search(linea, match, std::regex("<p> (\\d+)</p>")) || std::regex_search(linea, match, std::regex("<p>q(\\d+)</p>"))) {
+                std::string estadoInicial = "q" + match[1].str();
+                salida << "<h2>Estado Inicial:</h2>" << "\n";
+                salida << "<p>" << estadoInicial << "</p>" << "\n";
+            }
+        } else if (linea.find("<h2>Estados:") != std::string::npos ||
+                   linea.find("<h2>Estados Finales:") != std::string::npos) {
+            enEstadosFinales = true;
+            salida << linea << "\n";
+        } else if (enEstadosFinales) {
+            if (linea.find("</ul>") != std::string::npos) {
+                // Terminar de procesar la lista de Estados Finales
+                enEstadosFinales = false;
+                salida << linea << "\n";
+            } else if (linea.find("<li>") != std::string::npos) {
+                // Procesar un elemento de la lista de Estados Finales
+                std::smatch match;
+                if (std::regex_search(linea, match, std::regex("<li> (\\d+)</li>")) || std::regex_search(linea, match, std::regex("<li>q(\\d+)</li>"))) {
+                    std::string estado = "q" + match[1].str();
+                    salida << "<li>" << estado << "</li>" << "\n";
+                }
+            } else {
+                salida << linea << "\n";
+            }
+        } else {
+            salida << linea << "\n";
         }
-    }
-
-    for (const std::string& lineaModificada : lineasModificadas) {
-        salida << lineaModificada << "\n";
     }
 
     entrada.close();
     salida.close();
 
-    std::cout << "Conversion de AFN a AFD completa." << std::endl;
+    std::cout << "Conversion AFN a AFD completada." << std::endl;
 }
+
 
 int main() {
     std::cout << "Bienvenido al programa de manejo de archivos y operaciones AFN." << std::endl;
@@ -390,20 +429,6 @@ int main() {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         switch (choice) {
-            /*case 1: {
-                std::string filePath;
-                std::cout << "Introduce la ruta del archivo: ";
-                std::getline(std::cin, filePath);
-
-                if (!isXML(filePath)) {
-                    std::cerr << "Error: El archivo no es valido, por favor vuelva a intentarlo." << std::endl;
-                } else {
-                    currentFile = extractFileName(filePath);
-                    currentFilePath = filePath;
-                    std::cout << "Archivo XML seleccionado: " << currentFile << std::endl;
-                }
-                break;
-            }*/
             case 1: {
     // Ejecutar el archivo batch que construye el parser
     int result = system("build_parser.bat");
